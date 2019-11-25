@@ -9,7 +9,7 @@ This repository contains the up-to-date version of the source code used to build
 Pull requests to this repository are **not** accepted.
 
 ## Building
-Currently the only version of the executable on Steam is the WGL x64 build. SDL/SDL2 builds work on both Windows and Linux, but have some mouse-related issues in the UI. The Linux GLX build has slight sound issues with the ALSA backend.
+Currently the only version of the executable on Steam/GOG is the WGL x64 build. SDL/SDL2 builds work on both Windows and Linux, but have some mouse-related issues in the UI. The Linux GLX build has slight sound issues with the ALSA backend.
 
 This has not been built or tested on MacOS X yet, but it might work.
 
