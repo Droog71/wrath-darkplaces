@@ -159,6 +159,12 @@ cvar_t saved1 = {CVAR_SAVE, "saved1", "0", "unused cvar in quake that is saved t
 cvar_t saved2 = {CVAR_SAVE, "saved2", "0", "unused cvar in quake that is saved to config.cfg on exit, can be used by mods"};
 cvar_t saved3 = {CVAR_SAVE, "saved3", "0", "unused cvar in quake that is saved to config.cfg on exit, can be used by mods"};
 cvar_t saved4 = {CVAR_SAVE, "saved4", "0", "unused cvar in quake that is saved to config.cfg on exit, can be used by mods"};
+cvar_t saved5 = {CVAR_SAVE, "saved5", "0", "unused cvar in quake that is saved to config.cfg on exit, can be used by mods"};
+cvar_t saved6 = {CVAR_SAVE, "saved6", "0", "unused cvar in quake that is saved to config.cfg on exit, can be used by mods"};
+cvar_t saved7 = {CVAR_SAVE, "saved7", "0", "unused cvar in quake that is saved to config.cfg on exit, can be used by mods"};
+cvar_t saved8 = {CVAR_SAVE, "saved8", "0", "unused cvar in quake that is saved to config.cfg on exit, can be used by mods"};
+cvar_t saved9 = {CVAR_SAVE, "saved9", "0", "unused cvar in quake that is saved to config.cfg on exit, can be used by mods"};
+cvar_t saved0 = {CVAR_SAVE, "saved0", "0", "unused cvar in quake that is saved to config.cfg on exit, can be used by mods"};
 cvar_t savedgamecfg = {CVAR_SAVE, "savedgamecfg", "0", "unused cvar in quake that is saved to config.cfg on exit, can be used by mods"};
 cvar_t scratch1 = {0, "scratch1", "0", "unused cvar in quake, can be used by mods"};
 cvar_t scratch2 = {0,"scratch2", "0", "unused cvar in quake, can be used by mods"};
@@ -568,6 +574,12 @@ void SV_Init (void)
 	Cvar_RegisterVariable (&saved2);
 	Cvar_RegisterVariable (&saved3);
 	Cvar_RegisterVariable (&saved4);
+	Cvar_RegisterVariable (&saved5);
+	Cvar_RegisterVariable (&saved6);
+	Cvar_RegisterVariable (&saved7);
+	Cvar_RegisterVariable (&saved8);
+	Cvar_RegisterVariable (&saved9);
+	Cvar_RegisterVariable (&saved0);
 	Cvar_RegisterVariable (&savedgamecfg);
 	Cvar_RegisterVariable (&scratch1);
 	Cvar_RegisterVariable (&scratch2);
@@ -2473,7 +2485,9 @@ static void SV_UpdateToReliableMessages (void)
 		if (name == NULL)
 			name = "";
 		// always point the string back at host_client->name to keep it safe
-		strlcpy (host_client->name, name, sizeof (host_client->name));
+		//strlcpy (host_client->name, name, sizeof (host_client->name));
+		if (name != host_client->name) // prevent buffer overlap SIGABRT on Mac OSX
+			strlcpy (host_client->name, name, sizeof (host_client->name));
 		PRVM_serveredictstring(host_client->edict, netname) = PRVM_SetEngineString(prog, host_client->name);
 		if (strcmp(host_client->old_name, host_client->name))
 		{
@@ -2503,7 +2517,9 @@ static void SV_UpdateToReliableMessages (void)
 		if (model == NULL)
 			model = "";
 		// always point the string back at host_client->name to keep it safe
-		strlcpy (host_client->playermodel, model, sizeof (host_client->playermodel));
+		//strlcpy (host_client->playermodel, model, sizeof (host_client->playermodel));
+		if (model != host_client->playermodel) // prevent buffer overlap SIGABRT on Mac OSX
+			strlcpy (host_client->playermodel, model, sizeof (host_client->playermodel));
 		PRVM_serveredictstring(host_client->edict, playermodel) = PRVM_SetEngineString(prog, host_client->playermodel);
 
 		// NEXUIZ_PLAYERSKIN
@@ -2511,7 +2527,9 @@ static void SV_UpdateToReliableMessages (void)
 		if (skin == NULL)
 			skin = "";
 		// always point the string back at host_client->name to keep it safe
-		strlcpy (host_client->playerskin, skin, sizeof (host_client->playerskin));
+		//strlcpy (host_client->playerskin, skin, sizeof (host_client->playerskin));
+		if (skin != host_client->playerskin) // prevent buffer overlap SIGABRT on Mac OSX
+			strlcpy (host_client->playerskin, skin, sizeof (host_client->playerskin));
 		PRVM_serveredictstring(host_client->edict, playerskin) = PRVM_SetEngineString(prog, host_client->playerskin);
 
 		// TODO: add an extension name for this [1/17/2008 Black]
