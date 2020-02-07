@@ -24,13 +24,20 @@ This has not been built or tested on MacOS X yet, but it might work.
 * `libcurl`;
 * `libSDL 1.2` or `libSDL 2.0` for the SDL/SDL2 builds.
 
+For example, in MSYS2 you can use the following command to get pretty much everything you need:
+```
+pacman -S git mingw-w64-{i686,x86_64}-{gcc,make,cmake} mingw-w64-{i686,x86_64}-{libjpeg-turbo,libogg,libvorbis,libpng,freetype,curl,SDL2}
+```
+
 ### Instructions
 1. Install dependencies (if you're using msys2, you can get most of these using pacman; some libraries are loaded dynamically and you can just copy the DLLs from the game folder, or from a DarkPlaces release); 
 1. `cd` to this directory;
 2. Run `make` to get the list of available targets.
 3. `make` your desired target.
 
-`cl-release`/`cl-debug` will build the WGL executable on Windows and the GLX executable on Linux. Use `sdl2-release`/`sdl2-debug` to build the SDL2 version. Remove the `2` for the SDL1.2 version.
+`make cl-release`/`make cl-debug` will build the WGL executable on Windows and the GLX executable on Linux.
+
+Use `make sdl2-release`/`make sdl2-debug` to build the SDL2 version. Remove the `2` for the SDL1.2 version.
 
 ## Running
 Rename your binary to `wrath` (or `wrath.exe` on Windows), place it into the game directory and run it.
