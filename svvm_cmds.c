@@ -1122,6 +1122,71 @@ static void VM_SV_walkmove(prvm_prog_t *prog)
 
 /*
 ===============
+VM_SV_walkmovedist
+
+float(float yaw, float dist[, settrace]) walkmovedist (EXT_WRATH)
+===============
+*/
+static void VM_SV_walkmovedist(prvm_prog_t *prog)
+{
+	prvm_edict_t	*ent;
+	float	yaw, dist;
+	vec3_t	move, oldorg, neworg;
+	mfunction_t	*oldf;
+	int 	oldself;
+	qboolean	settrace;
+
+	VM_SAFEPARMCOUNTRANGE(2, 3, VM_SV_walkmovedist);
+
+	// assume failure if it returns early
+	PRVM_G_FLOAT(OFS_RETURN) = 0;
+
+	ent = PRVM_PROG_TO_EDICT(PRVM_serverglobaledict(self));
+	if (ent == prog->edicts)
+	{
+		VM_Warning(prog, "walkmove: can not modify world entity\n");
+		return;
+	}
+	if (ent->priv.server->free)
+	{
+		VM_Warning(prog, "walkmove: can not modify free entity\n");
+		return;
+	}
+	yaw = PRVM_G_FLOAT(OFS_PARM0);
+	dist = PRVM_G_FLOAT(OFS_PARM1);
+	settrace = prog->argc >= 3 && PRVM_G_FLOAT(OFS_PARM2);
+
+	if ( !( (int)PRVM_serveredictfloat(ent, flags) & (FL_ONGROUND|FL_FLY|FL_SWIM) ) )
+		return;
+
+	yaw = yaw*M_PI*2 / 360;
+
+	move[0] = cos(yaw)*dist;
+	move[1] = sin(yaw)*dist;
+	move[2] = 0;
+
+// save origin before move
+	VectorCopy (PRVM_serveredictvector(ent, origin), oldorg);
+
+// save program state, because SV_movestep may call other progs
+	oldf = prog->xfunction;
+	oldself = PRVM_serverglobaledict(self);
+
+	SV_movestep(ent, move, true, false, settrace);
+
+// restore program state
+	prog->xfunction = oldf;
+	PRVM_serverglobaledict(self) = oldself;
+
+// save origin after move
+	VectorCopy (PRVM_serveredictvector(ent, origin), neworg);
+
+// return distance traveled
+	PRVM_G_FLOAT(OFS_RETURN) = VectorDistance(oldorg, neworg);
+}
+
+/*
+===============
 VM_SV_droptofloor
 
 void() droptofloor
@@ -4215,7 +4280,7 @@ VM_frename,					// #651 float (string fnold, string fnnew) frename (EXT_WRATH)
 VM_fremove,					// #652 float (string fname) fremove (EXT_WRATH)
 VM_fexists,					// #653 float (string fname) fexists (EXT_WRATH)
 VM_rmtree,					// #654 float (string path) rmtree (EXT_WRATH)
-NULL,						// #655
+VM_SV_walkmovedist, // #655 float (float yaw, float dist[, float settrace]) walkmovedist (EXT_WRATH)
 NULL,						// #656
 NULL,						// #657
 NULL,						// #658
