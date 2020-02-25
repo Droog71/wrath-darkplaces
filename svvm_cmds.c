@@ -2,6 +2,7 @@
 
 #include "prvm_cmds.h"
 #include "jpeg.h"
+#include "nodegraph.h"
 
 //============================================================================
 // Server
@@ -226,6 +227,7 @@ const char *vm_sv_extensions =
 "TW_SV_STEPCONTROL "
 "ZQ_PAUSE "
 "EXT_WRATH "
+"EXT_NODEGRAPH "
 //"EXT_CSQC " // not ready yet
 ;
 
@@ -3243,6 +3245,379 @@ static void VM_SV_frameduration(prvm_prog_t *prog)
 		PRVM_G_FLOAT(OFS_RETURN) = model->animscenes[framenum].framecount / model->animscenes[framenum].framerate;
 }
 
+// #700 float() nodegraph_graphset_clear (EXT_NODEGRAPH)
+static void VM_nodegraph_graphset_clear(prvm_prog_t *prog)
+{
+	VM_SAFEPARMCOUNT(0, VM_nodegraph_graphset_clear);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graphset_clear();
+}
+
+// #701 float() nodegraph_graphset_load (EXT_NODEGRAPH)
+static void VM_nodegraph_graphset_load(prvm_prog_t *prog)
+{
+	VM_SAFEPARMCOUNT(0, VM_nodegraph_graphset_load);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graphset_load();
+}
+
+// #702 float() nodegraph_graphset_save (EXT_NODEGRAPH)
+static void VM_nodegraph_graphset_save(prvm_prog_t *prog)
+{
+	VM_SAFEPARMCOUNT(0, VM_nodegraph_graphset_save);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graphset_save();
+}
+
+// #703 float(float graphid) nodegraph_graph_clear (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_clear(prvm_prog_t *prog)
+{
+	short graphid;
+
+	VM_SAFEPARMCOUNT(1, VM_nodegraph_graph_clear);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_clear(graphid);
+}
+
+// #704 float(float graphid) nodegraph_graph_nodes_count (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_nodes_count(prvm_prog_t *prog)
+{
+	short graphid;
+
+	VM_SAFEPARMCOUNT(1, VM_nodegraph_graph_nodes_count);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_nodes_count(graphid);
+}
+
+// #705 float(float graphid, vector node) nodegraph_graph_add_node (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_add_node(prvm_prog_t *prog)
+{
+	short graphid;
+	vec3_t node;
+
+	VM_SAFEPARMCOUNT(2, VM_nodegraph_graph_add_node);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM1), node);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_add_node(graphid, node);
+}
+
+// #706 float(float graphid, float nodeid) nodegraph_graph_remove_node (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_remove_node(prvm_prog_t *prog)
+{
+	short graphid;
+	short nodeid;
+
+	VM_SAFEPARMCOUNT(2, VM_nodegraph_graph_remove_node);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+	nodeid = (short)PRVM_G_FLOAT(OFS_PARM1);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_remove_node(graphid, nodeid);
+}
+
+// #707 float(float graphid, float nodeid) nodegraph_graph_is_node_valid (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_is_node_valid(prvm_prog_t *prog)
+{
+	short graphid;
+	short nodeid;
+
+	VM_SAFEPARMCOUNT(2, VM_nodegraph_graph_is_node_valid);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+	nodeid = (short)PRVM_G_FLOAT(OFS_PARM1);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_is_node_valid(graphid, nodeid);
+}
+
+// #708 vector(float graphid, float nodeid) nodegraph_graph_get_node (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_get_node(prvm_prog_t *prog)
+{
+	short graphid;
+	short nodeid;
+	vec3_t outnode;
+
+	VM_SAFEPARMCOUNT(2, VM_nodegraph_graph_get_node);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+	nodeid = (short)PRVM_G_FLOAT(OFS_PARM1);
+
+	nodegraph_graph_get_node(graphid, nodeid, outnode);
+
+	VectorCopy(outnode, PRVM_G_VECTOR(OFS_RETURN));
+}
+
+// #709 float(float graphid, float nodeidfrom, float nodeidto) nodegraph_graph_add_link (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_add_link(prvm_prog_t *prog)
+{
+	short graphid;
+	short nodeidfrom;
+	short nodeidto;
+
+	VM_SAFEPARMCOUNT(3, VM_nodegraph_graph_add_link);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+	nodeidfrom = (short)PRVM_G_FLOAT(OFS_PARM1);
+	nodeidto = (short)PRVM_G_FLOAT(OFS_PARM2);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_add_link(graphid, nodeidfrom, nodeidto);
+}
+
+// #710 float(float graphid, float nodeidfrom, float nodeidto) nodegraph_graph_remove_link (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_remove_link(prvm_prog_t *prog)
+{
+	short graphid;
+	short nodeidfrom;
+	short nodeidto;
+
+	VM_SAFEPARMCOUNT(3, VM_nodegraph_graph_remove_link);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+	nodeidfrom = (short)PRVM_G_FLOAT(OFS_PARM1);
+	nodeidto = (short)PRVM_G_FLOAT(OFS_PARM2);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_remove_link(graphid, nodeidfrom, nodeidto);
+}
+// #711 float(float graphid, float nodeidfrom, float nodeidto) nodegraph_graph_does_link_exist (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_does_link_exist(prvm_prog_t *prog)
+{
+	short graphid;
+	short nodeidfrom;
+	short nodeidto;
+
+	VM_SAFEPARMCOUNT(3, VM_nodegraph_graph_does_link_exist);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+	nodeidfrom = (short)PRVM_G_FLOAT(OFS_PARM1);
+	nodeidto = (short)PRVM_G_FLOAT(OFS_PARM2);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_does_link_exist(graphid, nodeidfrom, nodeidto);
+}
+
+// #712 float(float graphid, vector position) nodegraph_graph_find_nearest_nodeid (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_find_nearest_nodeid(prvm_prog_t *prog)
+{
+	short graphid;
+	vec3_t position;
+
+	VM_SAFEPARMCOUNT(2, VM_nodegraph_graph_find_nearest_nodeid);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM1), position);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_find_nearest_nodeid(graphid, position);
+}
+
+// #713 float(float graphid, float nodeidfrom, float nodeidto) nodegraph_graph_query_path (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_query_path(prvm_prog_t *prog)
+{
+	short graphid;
+	short nodeidfrom;
+	short nodeidto;
+
+	VM_SAFEPARMCOUNT(3, VM_nodegraph_graph_query_path);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+	nodeidfrom = (short)PRVM_G_FLOAT(OFS_PARM1);
+	nodeidto = (short)PRVM_G_FLOAT(OFS_PARM2);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_query_path(graphid, nodeidfrom, nodeidto);
+}
+
+// #714 float(float graphid, float nodeid) nodegraph_graph_query_nodes_linked (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_query_nodes_linked(prvm_prog_t *prog)
+{
+	short graphid;
+	short nodeid;
+
+	VM_SAFEPARMCOUNT(2, VM_nodegraph_graph_query_nodes_linked);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+	nodeid = (short)PRVM_G_FLOAT(OFS_PARM1);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_query_nodes_linked(graphid, nodeid);
+}
+
+// #715 float(float graphid, vector position, float radius) nodegraph_graph_query_nodes_in_radius (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_query_nodes_in_radius(prvm_prog_t *prog)
+{
+	short graphid;
+	vec3_t position;
+	float radius;
+
+	VM_SAFEPARMCOUNT(3, VM_nodegraph_graph_query_nodes_in_radius);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM1), position);
+	radius = PRVM_G_FLOAT(OFS_PARM2);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_query_nodes_in_radius(graphid, position, radius);
+}
+
+// #716 float(float queryid) nodegraph_query_release (EXT_NODEGRAPH)
+static void VM_nodegraph_query_release(prvm_prog_t *prog)
+{
+	short queryid;
+
+	VM_SAFEPARMCOUNT(1, VM_nodegraph_query_release);
+
+	queryid = (short)PRVM_G_FLOAT(OFS_PARM0);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_query_release(queryid);
+}
+
+// #717 float(float queryid) nodegraph_query_entries_count (EXT_NODEGRAPH)
+static void VM_nodegraph_query_entries_count(prvm_prog_t *prog)
+{
+	short queryid;
+
+	VM_SAFEPARMCOUNT(1, VM_nodegraph_query_entries_count);
+
+	queryid = (short)PRVM_G_FLOAT(OFS_PARM0);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_query_entries_count(queryid);
+}
+
+// #718 float(float queryid) nodegraph_query_is_valid (EXT_NODEGRAPH)
+static void VM_nodegraph_query_is_valid(prvm_prog_t *prog)
+{
+	short queryid;
+
+	VM_SAFEPARMCOUNT(1, VM_nodegraph_query_is_valid);
+
+	queryid = (short)PRVM_G_FLOAT(OFS_PARM0);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_query_is_valid(queryid);
+}
+
+// #719 float(float queryid) nodegraph_query_get_graphid (EXT_NODEGRAPH)
+static void VM_nodegraph_query_get_graphid(prvm_prog_t *prog)
+{
+	short queryid;
+
+	VM_SAFEPARMCOUNT(1, VM_nodegraph_query_get_graphid);
+
+	queryid = (short)PRVM_G_FLOAT(OFS_PARM0);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_query_get_graphid(queryid);
+}
+
+// #720 float(float queryid, float entryid) nodegraph_query_get_nodeid (EXT_NODEGRAPH)
+static void VM_nodegraph_query_get_nodeid(prvm_prog_t *prog)
+{
+	short queryid;
+	short entryid;
+
+	VM_SAFEPARMCOUNT(2, VM_nodegraph_query_get_nodeid);
+
+	queryid = (short)PRVM_G_FLOAT(OFS_PARM0);
+	entryid = (short)PRVM_G_FLOAT(OFS_PARM1);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_query_get_nodeid(queryid, entryid);
+}
+
+// #721 float(vector nodefrom, vector nodeto, vector mins, vector maxs, float type) nodegraph_moveprobe_fly (EXT_NODEGRAPH)
+static void VM_nodegraph_moveprobe_fly(prvm_prog_t *prog)
+{
+	vec3_t nodefrom;
+	vec3_t nodeto;
+	vec3_t mins;
+	vec3_t maxs;
+	short type;
+
+	VM_SAFEPARMCOUNT(5, VM_nodegraph_moveprobe_fly);
+
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM0), nodefrom);
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM1), nodeto);
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM2), mins);
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM3), maxs);
+
+	type = (short)PRVM_G_FLOAT(OFS_PARM4);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_moveprobe_fly(nodefrom, nodeto, mins, maxs, type);
+}
+
+// #722 (vector nodefrom, vector nodeto, vector mins, vector maxs, float stepheight, float dropheight) nodegraph_moveprobe_walk (EXT_NODEGRAPH)
+static void VM_nodegraph_moveprobe_walk(prvm_prog_t *prog)
+{
+	vec3_t nodefrom;
+	vec3_t nodeto;
+	vec3_t mins;
+	vec3_t maxs;
+	float stepheight;
+	float dropheight;
+
+	VM_SAFEPARMCOUNT(6, VM_nodegraph_moveprobe_walk);
+
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM0), nodefrom);
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM1), nodeto);
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM2), mins);
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM3), maxs);
+
+	stepheight = PRVM_G_FLOAT(OFS_PARM4);
+	dropheight = PRVM_G_FLOAT(OFS_PARM5);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_moveprobe_walk(nodefrom, nodeto, mins, maxs, stepheight, dropheight);
+}
+
+// #723 float(float graphid, vector position, float radius, vector mins, vector maxs, float type) nodegraph_graph_query_nodes_in_radius_fly_reachable (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_query_nodes_in_radius_fly_reachable(prvm_prog_t *prog)
+{
+	short graphid;
+	vec3_t position;
+	float radius;
+	vec3_t mins;
+	vec3_t maxs;
+	short type;
+
+	VM_SAFEPARMCOUNT(6, VM_nodegraph_graph_query_nodes_in_radius_fly_reachable);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM1), position);
+
+	radius = PRVM_G_FLOAT(OFS_PARM2);
+
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM3), mins);
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM4), maxs);
+
+	type = (short)PRVM_G_FLOAT(OFS_PARM5);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_query_nodes_in_radius_fly_reachable(graphid, position, radius, mins, maxs, type);
+}
+
+// #724 float(float graphid, vector position, float radius, vector mins, vector maxs, float stepheight, float dropheight) nodegraph_graph_query_nodes_in_radius_walk_reachable (EXT_NODEGRAPH)
+static void VM_nodegraph_graph_query_nodes_in_radius_walk_reachable(prvm_prog_t *prog)
+{
+	short graphid;
+	vec3_t position;
+	float radius;
+	vec3_t mins;
+	vec3_t maxs;
+	float stepheight;
+	float dropheight;
+
+	VM_SAFEPARMCOUNT(7, VM_nodegraph_graph_query_nodes_in_radius_walk_reachable);
+
+	graphid = (short)PRVM_G_FLOAT(OFS_PARM0);
+
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM1), position);
+
+	radius = PRVM_G_FLOAT(OFS_PARM2);	
+
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM3), mins);
+	VectorCopy(PRVM_G_VECTOR(OFS_PARM4), maxs);
+
+	stepheight = PRVM_G_FLOAT(OFS_PARM5);
+	dropheight = PRVM_G_FLOAT(OFS_PARM6);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_query_nodes_in_radius_walk_reachable(graphid, position, radius, mins, maxs, stepheight, dropheight);
+}
 
 prvm_builtin_t vm_sv_builtins[] = {
 NULL,							// #0 NULL function (not callable) (QUAKE)
@@ -3906,6 +4281,100 @@ VM_fremove,					// #652 float (string fname) fremove (EXT_WRATH)
 VM_fexists,					// #653 float (string fname) fexists (EXT_WRATH)
 VM_rmtree,					// #654 float (string path) rmtree (EXT_WRATH)
 VM_SV_walkmovedist, // #655 float (float yaw, float dist[, float settrace]) walkmovedist (EXT_WRATH)
+NULL,						// #656
+NULL,						// #657
+NULL,						// #658
+NULL,						// #659
+NULL,						// #660
+NULL,						// #661
+NULL,						// #662
+NULL,						// #663
+NULL,						// #664
+NULL,						// #665
+NULL,						// #666
+NULL,						// #667
+NULL,						// #668
+NULL,						// #669
+NULL,						// #670
+NULL,						// #671
+NULL,						// #672
+NULL,						// #673
+NULL,						// #674
+NULL,						// #675
+NULL,						// #676
+NULL,						// #677
+NULL,						// #678
+NULL,						// #679
+NULL,						// #680
+NULL,						// #681
+NULL,						// #682
+NULL,						// #683
+NULL,						// #684
+NULL,						// #685
+NULL,						// #686
+NULL,						// #687
+NULL,						// #688
+NULL,						// #689
+NULL,						// #690
+NULL,						// #691
+NULL,						// #692
+NULL,						// #693
+NULL,						// #694
+NULL,						// #695
+NULL,						// #696
+NULL,						// #697
+NULL,						// #698
+NULL,						// #699
+VM_nodegraph_graphset_clear,								// #700 float() nodegraph_graphset_clear (EXT_NODEGRAPH)
+VM_nodegraph_graphset_load,									// #701 float() nodegraph_graphset_load (EXT_NODEGRAPH)
+VM_nodegraph_graphset_save,									// #702 float() nodegraph_graphset_save (EXT_NODEGRAPH)
+VM_nodegraph_graph_clear,									// #703 float(float graphid) nodegraph_graph_clear (EXT_NODEGRAPH)
+VM_nodegraph_graph_nodes_count,								// #704 float(float graphid) nodegraph_graph_nodes_count (EXT_NODEGRAPH)
+VM_nodegraph_graph_add_node,								// #705 float(float graphid, vector node) nodegraph_graph_add_node (EXT_NODEGRAPH)
+VM_nodegraph_graph_remove_node,								// #706 float(float graphid, float nodeid) nodegraph_graph_remove_node (EXT_NODEGRAPH)
+VM_nodegraph_graph_is_node_valid,							// #707 float(float graphid, float nodeid) nodegraph_graph_is_node_valid (EXT_NODEGRAPH)
+VM_nodegraph_graph_get_node,								// #708 vector(float graphid, float nodeid) nodegraph_graph_get_node (EXT_NODEGRAPH)
+VM_nodegraph_graph_add_link,								// #709 float(float graphid, float nodeidfrom, float nodeidto) nodegraph_graph_add_link (EXT_NODEGRAPH)
+VM_nodegraph_graph_remove_link,								// #710 float(float graphid, float nodeidfrom, float nodeidto) nodegraph_graph_remove_link (EXT_NODEGRAPH)
+VM_nodegraph_graph_does_link_exist,							// #711 float(float graphid, float nodeidfrom, float nodeidto) nodegraph_graph_does_link_exist (EXT_NODEGRAPH)
+VM_nodegraph_graph_find_nearest_nodeid,						// #712 float(float graphid, vector position) nodegraph_graph_find_nearest_nodeid (EXT_NODEGRAPH)
+VM_nodegraph_graph_query_path,								// #713 float(float graphid, float nodeidfrom, float nodeidto) nodegraph_graph_query_path (EXT_NODEGRAPH)
+VM_nodegraph_graph_query_nodes_linked,						// #714 float(float graphid, float nodeid) nodegraph_graph_query_nodes_linked (EXT_NODEGRAPH)
+VM_nodegraph_graph_query_nodes_in_radius,					// #715 float(float graphid, vector position, float radius) nodegraph_graph_query_nodes_in_radius (EXT_NODEGRAPH)
+VM_nodegraph_query_release,									// #716 float(float queryid) nodegraph_query_release (EXT_NODEGRAPH)
+VM_nodegraph_query_entries_count,							// #717 float(float queryid) nodegraph_query_entries_count (EXT_NODEGRAPH)
+VM_nodegraph_query_is_valid,								// #718 float(float queryid) nodegraph_query_is_valid (EXT_NODEGRAPH)
+VM_nodegraph_query_get_graphid,								// #719 float(float queryid) nodegraph_query_get_graphid (EXT_NODEGRAPH)
+VM_nodegraph_query_get_nodeid,								// #720 float(float queryid, float entryid) nodegraph_query_get_nodeid (EXT_NODEGRAPH)
+VM_nodegraph_moveprobe_fly,									// #721 float(vector nodefrom, vector nodeto, vector mins, vector maxs, float type) nodegraph_moveprobe_fly (EXT_NODEGRAPH)
+VM_nodegraph_moveprobe_walk,								// #722 (vector nodefrom, vector nodeto, vector mins, vector maxs, float stepheight, float dropheight) nodegraph_moveprobe_walk (EXT_NODEGRAPH)
+VM_nodegraph_graph_query_nodes_in_radius_fly_reachable,		// #723 float(float graphid, vector position, float radius, vector mins, vector maxs, float type) nodegraph_graph_query_nodes_in_radius_fly_reachable (EXT_NODEGRAPH)
+VM_nodegraph_graph_query_nodes_in_radius_walk_reachable,	// #724 float(float graphid, vector position, float radius, vector mins, vector maxs, float stepheight, float dropheight) nodegraph_graph_query_nodes_in_radius_walk_reachable (EXT_NODEGRAPH)
+NULL,						// #725
+NULL,						// #726
+NULL,						// #727
+NULL,						// #728
+NULL,						// #729
+NULL,						// #730
+NULL,						// #731
+NULL,						// #732
+NULL,						// #733
+NULL,						// #734
+NULL,						// #735
+NULL,						// #736
+NULL,						// #737
+NULL,						// #738
+NULL,						// #739
+NULL,						// #740
+NULL,						// #741
+NULL,						// #742
+NULL,						// #743
+NULL,						// #744
+NULL,						// #745
+NULL,						// #746
+NULL,						// #747
+NULL,						// #748
+NULL,						// #749
 NULL
 };
 
