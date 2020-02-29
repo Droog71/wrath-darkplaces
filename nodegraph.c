@@ -129,7 +129,7 @@ static qboolean nodegraph_graph_rebuild_floyd_warshall_matrices(void)
 {
 	short graphid, i, j, k;
 
-	float *floyd_matrix_measures = (float *)Mem_Alloc(tempmempool, NODEGRAPH_NODES_COUNT_LIMIT * NODEGRAPH_NODES_COUNT_LIMIT);
+	float *floyd_matrix_measures = (float *)Mem_Alloc(tempmempool, NODEGRAPH_NODES_COUNT_LIMIT * NODEGRAPH_NODES_COUNT_LIMIT * sizeof(float));
 
 	if (!floyd_matrix_measures)
 	{
