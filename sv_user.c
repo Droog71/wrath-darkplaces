@@ -313,8 +313,16 @@ static void SV_AirMove (void)
 	float fmove, smove, temp;
 
 	// LordHavoc: correct quake movement speed bug when looking up/down
-	wishvel[0] = wishvel[2] = 0;
-	wishvel[1] = PRVM_serveredictvector(host_client->edict, angles)[1];
+	if (PRVM_serveredictfloat(host_client->edict, movetype) == MOVETYPE_NOCLIP || PRVM_serveredictfloat(host_client->edict, movetype) == MOVETYPE_FLY)
+	{
+		VectorCopy(PRVM_serveredictvector(host_client->edict, v_angle), wishvel);
+		wishvel[2] = 0;
+	}
+	else
+	{
+		wishvel[0] = wishvel[2] = 0;
+		wishvel[1] = PRVM_serveredictvector(host_client->edict, angles)[1];
+	}
 	AngleVectors (wishvel, forward, right, up);
 
 	fmove = cmd.forwardmove;
@@ -339,7 +347,7 @@ static void SV_AirMove (void)
 		wishspeed = sv_maxspeed.value;
 	}
 
-	if (PRVM_serveredictfloat(host_client->edict, movetype) == MOVETYPE_NOCLIP)
+	if (PRVM_serveredictfloat(host_client->edict, movetype) == MOVETYPE_NOCLIP || PRVM_serveredictfloat(host_client->edict, movetype) == MOVETYPE_FLY)
 	{
 		// noclip
 		VectorCopy (wishvel, PRVM_serveredictvector(host_client->edict, velocity));
@@ -397,6 +405,14 @@ void SV_ClientThink (void)
 		return;
 
 	cmd = host_client->cmd;
+
+	// clear movement vector if IGNOREINPUT is set
+	if ( (int)PRVM_serveredictfloat(host_client->edict, flags) & FL_IGNOREINPUT )
+	{
+		cmd.forwardmove = 0.0f;
+		cmd.sidemove = 0.0f;
+		cmd.upmove = 0.0f;
+	}
 
 	// angles
 	// show 1/3 the pitch angle and all the roll angle

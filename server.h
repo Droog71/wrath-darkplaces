@@ -375,6 +375,7 @@ typedef struct client_s
 #define	FL_PARTIALGROUND		1024	///< not all corners are valid
 #define	FL_WATERJUMP			2048	///< player jumping out of water
 #define	FL_JUMPRELEASED			4096	///< for jump debouncing
+#define FL_IGNOREINPUT			8192	///< ignores client input while set
 
 #define	SPAWNFLAG_NOT_EASY			256
 #define	SPAWNFLAG_NOT_MEDIUM		512

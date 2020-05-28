@@ -688,7 +688,7 @@ static void Cmd_Exec(const char *filename)
 "sv_gameplayfix_fixedcheckwatertransition 1\n"
 "sv_gameplayfix_q1bsptracelinereportstexture 1\n"
 "sv_gameplayfix_swiminbmodels 1\n"
-"sv_gameplayfix_downtracesupportsongroundflag 1\n"
+"sv_gameplayfix_downtracesupportsongroundflag 0\n"
 "sv_gameplayfix_stepmultipletimes 1\n"
 "sv_gameplayfix_nogravityonground 1\n"
 "sys_ticrate 0.01388889\n"

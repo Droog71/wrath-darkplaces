@@ -130,6 +130,7 @@ int			scr_con_margin_bottom;
 extern int	con_vislines;
 
 static void SCR_ScreenShot_f (void);
+static void SCR_SaveShot_f (void);
 static void R_Envmap_f (void);
 
 // backend
@@ -1417,6 +1418,7 @@ void CL_Screen_Init(void)
 	Cmd_AddCommand ("sizeup",SCR_SizeUp_f, "increase view size (increases viewsize cvar)");
 	Cmd_AddCommand ("sizedown",SCR_SizeDown_f, "decrease view size (decreases viewsize cvar)");
 	Cmd_AddCommand ("screenshot",SCR_ScreenShot_f, "takes a screenshot of the next rendered frame");
+	Cmd_AddCommand ("saveshot",SCR_SaveShot_f, "takes a screenshot without HUD to be used as a savefile thumbnail");
 	Cmd_AddCommand ("envmap", R_Envmap_f, "render a cubemap (skybox) of the current scene");
 	Cmd_AddCommand ("infobar", SCR_InfoBar_f, "display a text in the infobar (usage: infobar expiretime string)");
 
@@ -1425,6 +1427,72 @@ void CL_Screen_Init(void)
 #endif
 
 	scr_initialized = true;
+}
+
+/*
+==================
+SCR_SaveShot_f
+==================
+*/
+void SCR_SaveShot_f (void)
+{
+	int w, h;
+	char filename[MAX_QPATH] = { 0 };
+	unsigned char *buffer1;
+
+	if (Cmd_Argc() != 4)
+	{
+		Con_Print("saveshot <path> <w> <h>: takes a screenshot without HUD to be used as a savefile thumbnail\n");
+		return;
+	}
+
+	w = atoi(Cmd_Argv(1));
+	if (w < 1)
+	{
+		Con_Print("<w> has to be a positive integer\n");
+		return;
+	}
+
+	h = atoi(Cmd_Argv(2));
+	if (h < 1)
+	{
+		Con_Print("<h> has to be a positive integer\n");
+		return;
+	}
+
+	strlcpy(filename, Cmd_Argv(3), sizeof(filename));
+
+	buffer1 = (unsigned char *)Mem_Alloc(tempmempool, w * h * 4);
+
+	r_refdef.envmap = true;
+
+	R_UpdateVariables();
+
+	r_refdef.view.width = w;
+	r_refdef.view.height = h;
+	r_refdef.view.depth = 1;
+	r_refdef.view.useperspective = true;
+	r_refdef.view.isoverlay = false;
+	r_refdef.view.quality = 1;
+	r_refdef.view.clear = true;
+	r_refdef.view.frustum_x = 1;
+	r_refdef.view.frustum_y = 1;
+	r_refdef.view.ortho_x = 90;
+	r_refdef.view.ortho_y = 90;
+
+	R_Mesh_Start();
+	R_RenderView();
+	R_Mesh_Finish();
+	GL_ReadPixelsBGRA(0, vid.height - h, w, h, buffer1);
+
+	if (PNG_SaveImage_preflipped(filename, w, h, true, buffer1))
+		Con_Printf("wrote %s\n", filename);
+	else
+		Con_Printf("could not create %s\n", filename);
+
+	Mem_Free(buffer1);
+
+	r_refdef.envmap = false;
 }
 
 /*

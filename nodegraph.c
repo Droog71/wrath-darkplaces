@@ -2,7 +2,7 @@
 #include "nodegraph.h"
 
 // ============================================================================
-#define NODEGRAPH_NODES_COUNT_LIMIT 1024
+#define NODEGRAPH_NODES_COUNT_LIMIT 4096
 #define NODEGRAPH_QUERY_ENTRIES_LIMIT NODEGRAPH_NODES_COUNT_LIMIT
 #define NODEGRAPH_QUERIES_COUNT_LIMIT 128
 
