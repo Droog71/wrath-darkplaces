@@ -489,7 +489,7 @@ void V_CalcRefdefUsing (const matrix4x4_t *entrendermatrix, const vec3_t clviewa
 	realonground = clonground;
 
 	// if nogravityonground is enabled, use a "delayed" onground flag
-	if (sv_gameplayfix_nogravityonground.integer && !clonground && (cl.time - cl.bobongroundtime < 0.2))
+	if ((cl.moveflags & MOVEFLAG_NOGRAVITYONGROUND) && !clonground && (cl.time - cl.bobongroundtime < 0.2))
 		clonground = true;
 
 	// react to clonground state changes (for gun bob)
