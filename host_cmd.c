@@ -579,6 +579,9 @@ void Host_Savegame_to(prvm_prog_t *prog, const char *name)
 	isserver = prog == SVVM_prog;
 
 	Con_Printf("Saving game to %s...\n", name);
+	if (developer_loading.integer)
+		Con_TimePrintf("save game start\n");
+
 	f = FS_OpenRealFile(name, "wb", false);
 	if (!f)
 	{
@@ -704,6 +707,9 @@ void Host_Savegame_to(prvm_prog_t *prog, const char *name)
 
 	FS_Close (f);
 	Con_Print("done.\n");
+
+	if (developer_loading.integer)
+		Con_TimePrintf("save game end\n");
 }
 
 /*
@@ -797,6 +803,8 @@ static void Host_Loadgame_f (void)
 	FS_DefaultExtension (filename, ".sav", sizeof (filename));
 
 	Con_Printf("Loading game from %s...\n", filename);
+	if (developer_loading.integer)
+		Con_TimePrintf("load game start\n");
 
 	// stop playing demos
 	if (cls.demoplayback)
@@ -1106,6 +1114,9 @@ static void Host_Loadgame_f (void)
 
 	if(developer_entityparsing.integer)
 		Con_Printf("Host_Loadgame_f: finished\n");
+
+	if (developer_loading.integer)
+		Con_TimePrintf("load game end\n");
 
 	// make sure we're connected to loopback
 	if (sv.active && cls.state == ca_disconnected)

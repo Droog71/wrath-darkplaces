@@ -625,7 +625,7 @@ qboolean OGG_LoadVorbisFile(const char *filename, sfx_t *sfx)
 		return false;
 
 	if (developer_loading.integer >= 2)
-		Con_Printf("Loading Ogg Vorbis file \"%s\"\n", filename);
+		Con_TimePrintf("Loading Ogg Vorbis file \"%s\"\n", filename);
 
 	// Open it with the VorbisFile API
 	ov_decode.buffer = data;

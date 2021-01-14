@@ -1043,7 +1043,7 @@ void S_FreeSfx (sfx_t *sfx, qboolean force)
 		return;
 
 	if (developer_loading.integer)
-		Con_Printf ("unloading sound %s\n", sfx->name);
+		Con_TimePrintf ("unloading sound %s\n", sfx->name);
 
 	// Remove it from the list of known sfx
 	if (sfx == known_sfx)

@@ -11,6 +11,7 @@
 
 // ============================================================================
 qboolean nodegraph_graphset_clear(void);
+qboolean nodegraph_graphset_remove(void);
 
 qboolean nodegraph_graphset_load(void);
 qboolean nodegraph_graphset_save(void);

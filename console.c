@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #if !defined(WIN32) || defined(__MINGW32__)
 # include <unistd.h>
+# include <sys/time.h>
 #endif
 #include <time.h>
 
@@ -1453,6 +1454,57 @@ void Con_Printf(const char *fmt, ...)
 	va_end(argptr);
 
 	Con_MaskPrint(CON_MASK_PRINT, msg);
+}
+
+
+/*
+================
+Con_Timestamp
+================
+*/
+const char *Con_Timestamp(void)
+{
+	time_t cur_time;
+	struct timeval tv;
+#if _MSC_VER >= 1400
+	struct tm crt_tm;
+#else
+	struct tm *crt_tm;
+#endif
+	char timestring [16];
+	static char timestamp [24];
+
+	// Build the time stamp (ex: "21:49:08.093");
+	gettimeofday (&tv, NULL);
+	cur_time = tv.tv_sec;
+#if _MSC_VER >= 1400
+	localtime_s (&crt_tm, &cur_time);
+	strftime (timestring, sizeof (timestring), "%H:%M:%S", &crt_tm);
+#else
+	crt_tm = localtime (&cur_time);
+	strftime (timestring, sizeof (timestring), "%H:%M:%S", crt_tm);
+#endif
+
+	dpsnprintf (timestamp, sizeof (timestamp), "%s.%03d", timestring, (int)tv.tv_usec / 1000);
+
+	return timestamp;
+}
+
+/*
+================
+Con_TimePrintf
+================
+*/
+void Con_TimePrintf(const char *fmt, ...)
+{
+	va_list argptr;
+	char msg[MAX_INPUTLINE];
+
+	va_start(argptr,fmt);
+	dpvsnprintf(msg,sizeof(msg),fmt,argptr);
+	va_end(argptr);
+
+	Con_Printf("[%s] %s", Con_Timestamp(), msg);
 }
 
 /*

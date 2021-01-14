@@ -3257,6 +3257,9 @@ void SV_SpawnServer (const char *server)
 
 	Con_DPrintf("SpawnServer: %s\n", server);
 
+	if (developer_loading.integer)
+		Con_TimePrintf("SpawnServer start\n");
+
 	dpsnprintf (modelname, sizeof(modelname), "maps/%s.bsp", server);
 
 	if (!FS_FileExists(modelname))
@@ -3545,6 +3548,10 @@ void SV_SpawnServer (const char *server)
 	Cvar_SetQuick(&sv_worldmessage, sv.worldmessage);
 
 	Con_DPrint("Server spawned.\n");
+
+	if (developer_loading.integer)
+		Con_TimePrintf("SpawnServer end\n");
+
 	NetConn_Heartbeat (2);
 
 	if(cls.state == ca_dedicated)

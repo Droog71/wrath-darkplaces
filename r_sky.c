@@ -88,7 +88,7 @@ static void R_UnloadSkyBox(void)
 		skyboxskinframe[i] = NULL;
 	}
 	if (c && developer_loading.integer)
-		Con_Printf("unloading skybox\n");
+		Con_TimePrintf("unloading skybox\n");
 }
 
 static int R_LoadSkyBox(void)
@@ -137,7 +137,7 @@ static int R_LoadSkyBox(void)
 		return false;
 
 	if (developer_loading.integer)
-		Con_Printf("loading skybox \"%s\"\n", name);
+		Con_TimePrintf("loading skybox \"%s\"\n", name);
 
 	return true;
 }

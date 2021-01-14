@@ -3421,7 +3421,7 @@ skinframe_t *R_SkinFrame_LoadExternal(const char *name, int textureflags, qboole
 	// FIXME handle miplevel
 
 	if (developer_loading.integer)
-		Con_Printf("loading skin \"%s\"\n", name);
+		Con_TimePrintf("loading skin \"%s\"\n", name);
 
 	// we've got some pixels to store, so really allocate this new texture now
 	if (!skinframe)
@@ -3633,7 +3633,7 @@ skinframe_t *R_SkinFrame_LoadInternalBGRA(const char *name, int textureflags, co
 		return NULL;
 
 	if (developer_loading.integer)
-		Con_Printf("loading 32bit skin \"%s\"\n", name);
+		Con_TimePrintf("loading 32bit skin \"%s\"\n", name);
 
 	if (r_loadnormalmap && r_shadow_bumpscale_basetexture.value > 0)
 	{
@@ -3703,7 +3703,7 @@ skinframe_t *R_SkinFrame_LoadInternalQuake(const char *name, int textureflags, i
 		return NULL;
 
 	if (developer_loading.integer)
-		Con_Printf("loading quake skin \"%s\"\n", name);
+		Con_TimePrintf("loading quake skin \"%s\"\n", name);
 
 	// we actually don't upload anything until the first use, because mdl skins frequently go unused, and are almost never used in both modes (colormapped and non-colormapped)
 	skinframe->qpixels = (unsigned char *)Mem_Alloc(r_main_mempool, width*height); // FIXME LEAK
@@ -3827,7 +3827,7 @@ skinframe_t *R_SkinFrame_LoadInternal8bit(const char *name, int textureflags, co
 		return NULL;
 
 	if (developer_loading.integer)
-		Con_Printf("loading embedded 8bit image \"%s\"\n", name);
+		Con_TimePrintf("loading embedded 8bit image \"%s\"\n", name);
 
 	skinframe->base = skinframe->merged = R_LoadTexture2D(r_main_texturepool, skinframe->basename, width, height, skindata, TEXTYPE_PALETTE, textureflags, -1, palette);
 	if (textureflags & TEXF_ALPHA)
@@ -3968,7 +3968,7 @@ static rtexture_t *R_LoadCubemap(const char *basename)
 	if (cubemappixels)
 	{
 		if (developer_loading.integer)
-			Con_Printf("loading cubemap \"%s\"\n", basename);
+			Con_TimePrintf("loading cubemap \"%s\"\n", basename);
 
 		cubemaptexture = R_LoadTextureCubeMap(r_main_texturepool, basename, cubemapsize, cubemappixels, vid.sRGB3D ? TEXTYPE_SRGB_BGRA : TEXTYPE_BGRA, (gl_texturecompression_lightcubemaps.integer && gl_texturecompression.integer ? TEXF_COMPRESS : 0) | forcefilter | TEXF_CLAMP, -1, NULL);
 		Mem_Free(cubemappixels);
@@ -3978,7 +3978,7 @@ static rtexture_t *R_LoadCubemap(const char *basename)
 		Con_DPrintf("failed to load cubemap \"%s\"\n", basename);
 		if (developer_loading.integer)
 		{
-			Con_Printf("(tried tried images ");
+			Con_TimePrintf("(tried tried images ");
 			for (j = 0;j < 3;j++)
 				for (i = 0;i < 6;i++)
 					Con_Printf("%s\"%s%s.tga\"", j + i > 0 ? ", " : "", basename, suffix[j][i].suffix);
@@ -8154,7 +8154,7 @@ static void R_LoadQWSkin(r_qwskincache_t *cache, const char *skinname)
 	strlcpy(cache->name, skinname, sizeof(cache->name));
 	dpsnprintf(name, sizeof(name), "skins/%s.pcx", cache->name);
 	if (developer_loading.integer)
-		Con_Printf("loading %s\n", name);
+		Con_TimePrintf("loading %s\n", name);
 	skinframe = R_SkinFrame_Find(name, textureflags, 0, 0, 0, false);
 	if (!skinframe || !skinframe->base)
 	{

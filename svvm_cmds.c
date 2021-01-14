@@ -228,6 +228,7 @@ const char *vm_sv_extensions =
 "ZQ_PAUSE "
 "EXT_WRATH "
 "EXT_NODEGRAPH "
+"DP_RM_CLIPGROUP "
 //"EXT_CSQC " // not ready yet
 ;
 
@@ -3619,6 +3620,14 @@ static void VM_nodegraph_graph_query_nodes_in_radius_walk_reachable(prvm_prog_t 
 	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graph_query_nodes_in_radius_walk_reachable(graphid, position, radius, mins, maxs, stepheight, dropheight);
 }
 
+// #725 float() nodegraph_graphset_remove (EXT_NODEGRAPH)
+static void VM_nodegraph_graphset_remove(prvm_prog_t *prog)
+{
+	VM_SAFEPARMCOUNT(0, VM_nodegraph_graphset_load);
+
+	PRVM_G_FLOAT(OFS_RETURN) = (float)nodegraph_graphset_remove();
+}
+
 prvm_builtin_t vm_sv_builtins[] = {
 NULL,							// #0 NULL function (not callable) (QUAKE)
 VM_makevectors,					// #1 void(vector ang) makevectors (QUAKE)
@@ -4350,7 +4359,7 @@ VM_nodegraph_moveprobe_fly,									// #721 float(vector nodefrom, vector nodeto
 VM_nodegraph_moveprobe_walk,								// #722 (vector nodefrom, vector nodeto, vector mins, vector maxs, float stepheight, float dropheight) nodegraph_moveprobe_walk (EXT_NODEGRAPH)
 VM_nodegraph_graph_query_nodes_in_radius_fly_reachable,		// #723 float(float graphid, vector position, float radius, vector mins, vector maxs, float type) nodegraph_graph_query_nodes_in_radius_fly_reachable (EXT_NODEGRAPH)
 VM_nodegraph_graph_query_nodes_in_radius_walk_reachable,	// #724 float(float graphid, vector position, float radius, vector mins, vector maxs, float stepheight, float dropheight) nodegraph_graph_query_nodes_in_radius_walk_reachable (EXT_NODEGRAPH)
-NULL,						// #725
+VM_nodegraph_graphset_remove,						// #725 float() nodegraph_graphset_remove (EXT_NODEGRAPH)
 NULL,						// #726
 NULL,						// #727
 NULL,						// #728

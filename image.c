@@ -974,7 +974,7 @@ unsigned char *loadimagepixelsbgra (const char *filename, qboolean complain, qbo
 					}
 				}
 				if (developer_loading.integer)
-					Con_DPrintf("loaded image %s (%dx%d)\n", name, image_width, image_height);
+					Con_TimePrintf("loaded image %s (%dx%d)\n", name, image_width, image_height);
 				if(miplevel)
 					*miplevel = mymiplevel;
 				//if (developer_memorydebug.integer)

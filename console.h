@@ -51,6 +51,9 @@ void Con_Print(const char *txt);
 /// Prints to all appropriate console targets.
 void Con_Printf(const char *fmt, ...) DP_FUNC_PRINTF(1);
 
+/// Same as Con_Printf, but prepends message with timestamp
+void Con_TimePrintf(const char *fmt, ...) DP_FUNC_PRINTF(1);
+
 /// A Con_Print that only shows up if the "developer" cvar is set.
 void Con_DPrint(const char *msg);
 
@@ -61,7 +64,9 @@ void Con_DrawNotify (void);
 
 /// Clear all notify lines.
 void Con_ClearNotify (void);
+
 void Con_ToggleConsole_f (void);
+const char *Con_Timestamp(void);
 
 int Nicks_CompleteChatLine(char *buffer, size_t size, unsigned int pos);
 

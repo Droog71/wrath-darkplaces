@@ -2026,7 +2026,7 @@ static void Mod_Q1BSP_LoadLighting(sizebuf_t *sb)
 				if (i == 1)
 				{
 					if (developer_loading.integer)
-						Con_Printf("loaded %s\n", litfilename);
+						Con_TimePrintf("loaded %s\n", litfilename);
 					loadmodel->brushq1.lightdata = (unsigned char *)Mem_Alloc(loadmodel->mempool, filesize - 8);
 					memcpy(loadmodel->brushq1.lightdata, data + 8, filesize - 8);
 					Mem_Free(data);
@@ -2039,7 +2039,7 @@ static void Mod_Q1BSP_LoadLighting(sizebuf_t *sb)
 							if (i == 1)
 							{
 								if (developer_loading.integer)
-									Con_Printf("loaded %s\n", dlitfilename);
+									Con_TimePrintf("loaded %s\n", dlitfilename);
 								loadmodel->brushq1.nmaplightdata = (unsigned char *)Mem_Alloc(loadmodel->mempool, filesize - 8);
 								memcpy(loadmodel->brushq1.nmaplightdata, data + 8, filesize - 8);
 								loadmodel->brushq3.deluxemapping_modelspace = false;
@@ -4971,20 +4971,22 @@ static void Mod_Q3BSP_LoadLightmaps(lump_t *l, lump_t *faceslump)
 	{
 		// prefer internal LMs for compatibility (a BSP contains no info on whether external LMs exist)
 		if (developer_loading.integer)
-			Con_Printf("Using internal lightmaps\n");
+			Con_TimePrintf("Using internal lightmaps\n");
 		input_pointer = (q3dlightmap_t *)(mod_base + l->fileofs);
 		if (l->filelen % sizeof(*input_pointer))
 			Host_Error("Mod_Q3BSP_LoadLightmaps: funny lump size in %s",loadmodel->name);
 		count = l->filelen / sizeof(*input_pointer);
 		for(i = 0; i < count; ++i)
 			inpixels[i] = input_pointer[i].rgb;
+		if (developer_loading.integer)
+			Con_TimePrintf("loaded internal lightmaps\n");
 	}
 	else
 	{
 		// no internal lightmaps
 		// try external lightmaps
 		if (developer_loading.integer)
-			Con_Printf("Using external lightmaps\n");
+			Con_TimePrintf("Using external lightmaps\n");
 		FS_StripExtension(loadmodel->name, mapname, sizeof(mapname));
 		inpixels[0] = loadimagepixelsbgra(va(vabuf, sizeof(vabuf), "%s/lm_%04d", mapname, 0), false, false, false, NULL);
 		if(!inpixels[0])
@@ -5017,6 +5019,9 @@ static void Mod_Q3BSP_LoadLightmaps(lump_t *l, lump_t *faceslump)
 				break;
 			}
 		}
+
+		if (developer_loading.integer)
+			Con_TimePrintf("loaded external lightmaps\n");
 	}
 
 	loadmodel->brushq3.lightmapsize = size;

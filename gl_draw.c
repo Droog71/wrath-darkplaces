@@ -451,7 +451,7 @@ reload:
 	if ((!strncmp(pic->name, "gfx/", 4) || (gamemode == GAME_BLOODOMNICIDE && !strncmp(pic->name, "locale/", 6))) && (lmpdata = FS_LoadFile(lmpname, tempmempool, false, &lmpsize)))
 	{
 		if (developer_loading.integer)
-			Con_Printf("loading lump \"%s\"\n", pic->name);
+			Con_TimePrintf("loading lump \"%s\"\n", pic->name);
 
 		if (lmpsize >= 9)
 		{
@@ -469,7 +469,7 @@ reload:
 	else if ((lmpdata = W_GetLumpName (pic->name + 4)))
 	{
 		if (developer_loading.integer)
-			Con_Printf("loading gfx.wad lump \"%s\"\n", pic->name + 4);
+			Con_TimePrintf("loading gfx.wad lump \"%s\"\n", pic->name + 4);
 
 		if (!strcmp(pic->name, "gfx/conchars"))
 		{

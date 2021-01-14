@@ -193,7 +193,7 @@ void Mod_UnloadModel (dp_model_t *mod)
 	dp_model_t *parentmodel;
 
 	if (developer_loading.integer)
-		Con_Printf("unloading model %s\n", mod->name);
+		Con_TimePrintf("unloading model %s\n", mod->name);
 
 	strlcpy(name, mod->name, sizeof(name));
 	parentmodel = mod->brush.parentmodel;
@@ -393,7 +393,7 @@ dp_model_t *Mod_LoadModel(dp_model_t *mod, qboolean crash, qboolean checkdisk)
 			Mod_UnloadModel(mod);
 
 		if (developer_loading.integer)
-			Con_Printf("loading model %s\n", mod->name);
+			Con_TimePrintf("loading model %s\n", mod->name);
 
 		mod->used = true;
 		mod->crc = (unsigned int)-1;
@@ -447,7 +447,7 @@ dp_model_t *Mod_LoadModel(dp_model_t *mod, qboolean crash, qboolean checkdisk)
 	}
 
 	if (developer_loading.integer)
-		Con_Printf("loading model %s\n", mod->name);
+		Con_TimePrintf("loading model %s\n", mod->name);
 	
 	SCR_PushLoadingScreen(true, mod->name, 1);
 
@@ -2469,7 +2469,7 @@ qboolean Mod_LoadTextureFromQ3Shader(texture_t *texture, const char *name, qbool
 	if (shader)
 	{
 		if (developer_loading.integer)
-			Con_Printf("%s: loaded shader for %s\n", loadmodel->name, name);
+			Con_TimePrintf("%s: loaded shader for %s\n", loadmodel->name, name);
 
 		// allow disabling of picmip or compression by defaulttexflags
 		texture->textureflags = (shader->textureflags & texflagsmask) | texflagsor;
@@ -2836,7 +2836,7 @@ tag_torso,
 				if (words == 3)
 				{
 					if (developer_loading.integer)
-						Con_Printf("Mod_LoadSkinFiles: parsed mesh \"%s\" shader replacement \"%s\"\n", word[1], word[2]);
+						Con_TimePrintf("Mod_LoadSkinFiles: parsed mesh \"%s\" shader replacement \"%s\"\n", word[1], word[2]);
 					skinfileitem = (skinfileitem_t *)Mem_Alloc(loadmodel->mempool, sizeof(skinfileitem_t));
 					skinfileitem->next = skinfile->items;
 					skinfile->items = skinfileitem;
@@ -2855,7 +2855,7 @@ tag_torso,
 			{
 				// mesh shader name, like "U_RArm,models/players/Legoman/BikerA1.tga"
 				if (developer_loading.integer)
-					Con_Printf("Mod_LoadSkinFiles: parsed mesh \"%s\" shader replacement \"%s\"\n", word[0], word[2]);
+					Con_TimePrintf("Mod_LoadSkinFiles: parsed mesh \"%s\" shader replacement \"%s\"\n", word[0], word[2]);
 				skinfileitem = (skinfileitem_t *)Mem_Alloc(loadmodel->mempool, sizeof(skinfileitem_t));
 				skinfileitem->next = skinfile->items;
 				skinfile->items = skinfileitem;

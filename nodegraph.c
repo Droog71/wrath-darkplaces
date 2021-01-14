@@ -209,6 +209,18 @@ qboolean nodegraph_graphset_clear(void)
 }
 
 // ============================================================================
+qboolean nodegraph_graphset_remove(void)
+{
+	char vabuf[1024];
+	if (remove(va(vabuf, sizeof(vabuf), "%s/%s.qng", fs_gamedir, sv.worldnamenoextension)) != 0)
+	{
+		Con_Printf("Could not remove %s.qng\n", sv.worldnamenoextension);
+		return false;
+	}
+	return true;
+}
+
+// ============================================================================
 qboolean nodegraph_graphset_load(void)
 {
 	char vabuf[1024];
@@ -225,7 +237,10 @@ qboolean nodegraph_graphset_load(void)
 
 		size_t offset, length;
 
-		Con_Printf("Loaded %s.qng\n", sv.worldnamenoextension);
+		if (developer_loading.integer)
+			Con_TimePrintf("loading %s.qng\n", sv.worldnamenoextension);
+		else
+			Con_Printf("loaded %s.qng\n", sv.worldnamenoextension);
 
 		nodegraph_graphset_clear();
 
@@ -293,6 +308,9 @@ qboolean nodegraph_graphset_load(void)
 
 		Mem_Free(graphset_data);
 
+		if (developer_loading.integer)
+			Con_TimePrintf("done loading %s.qng\n", sv.worldnamenoextension);
+
 		return true;
 	}
 
@@ -313,6 +331,9 @@ qboolean nodegraph_graphset_save(void)
 	short graphset_nodes_count[NODEGRAPH_GRAPHSET_SIZE_LIMIT];
 
 	size_t offset, length;
+
+	if (developer_loading.integer)
+		Con_TimePrintf("saving %s.qng\n", sv.worldnamenoextension);
 
 	nodegraph_graph_rebuild_floyd_warshall_matrices();
 
@@ -399,7 +420,10 @@ qboolean nodegraph_graphset_save(void)
 
 	if (nodegraph_graphset_has_been_saved)
 	{
-		Con_Printf("Saved %s.qng\n", sv.worldnamenoextension);
+		if (developer_loading.integer)
+			Con_TimePrintf("done saving %s.qng\n", sv.worldnamenoextension);
+		else
+			Con_Printf("saved %s.qng\n", sv.worldnamenoextension);
 	}
 
 	return nodegraph_graphset_has_been_saved;

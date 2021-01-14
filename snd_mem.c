@@ -323,7 +323,7 @@ qboolean S_LoadSound (sfx_t *sfx, qboolean complain)
 	sfx->volume_peak = 0.0;
 
 	if (developer_loading.integer)
-		Con_Printf("loading sound %s\n", sfx->name);
+		Con_TimePrintf("loading sound %s\n", sfx->name);
 
 	SCR_PushLoadingScreen(true, sfx->name, 1);
 
